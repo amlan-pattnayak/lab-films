@@ -1,0 +1,96 @@
+name: Render film
+# Renders one Lab piece's full film from its static build in films/<film>/dist,
+# split into chunks rendered in parallel, then joined without re-encoding.
+# Start it from the Actions tab or: gh workflow run render.yml -f film=solar
+on:
+  workflow_dispatch:
+    inputs:
+      film:
+        description: Which piece
+        type: choice
+        options: [solar, gupta]
+        default: solar
+      chunks:
+        description: Parallel chunks
+        type: number
+        default: 16
+      limit:
+        description: Render only the first N frames (0 = the whole film). For test runs.
+        type: number
+        default: 0
+
+concurrency:
+  group: render-${{ inputs.film }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      total: ${{ steps.plan.outputs.total }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Count frames
+        id: plan
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${{ inputs.film }}/dist >/dev/null 2>&1 &
+          sleep 1
+          total=$(FILM=${{ inputs.film }} MODE=count node render.mjs | tail -1)
+          limit=${{ inputs.limit }}
+          if [ "$limit" -gt 0 ] && [ "$limit" -lt "$total" ]; then total=$limit; fi
+          matrix=$(python3 -c "import json,math; t=$total; c=min(${{ inputs.chunks }}, t); s=math.ceil(t/c); print(json.dumps({'include':[{'i':i,'start':i*s,'count':min(s,t-i*s)} for i in range(c) if i*s<t]}))")
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "Frames: $total" >> "$GITHUB_STEP_SUMMARY"
+
+  render:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Render frames ${{ matrix.start }}+${{ matrix.count }}
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${{ inputs.film }}/dist >/dev/null 2>&1 &
+          sleep 1
+          FILM=${{ inputs.film }} START=${{ matrix.start }} COUNT=${{ matrix.count }} \
+            OUT=chunk-$(printf %03d ${{ matrix.i }}).mp4 node render.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chunk-${{ matrix.i }}
+          path: chunk-*.mp4
+          retention-days: 3
+
+  join:
+    needs: [plan, render]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/download-artifact@v4
+        with: { pattern: chunk-*, merge-multiple: true }
+      - name: Join chunks and check the frame count
+        run: |
+          ls chunk-*.mp4 | sort | sed "s/.*/file '&'/" > list.txt
+          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy -movflags +faststart ${{ inputs.film }}-full-16x9.mp4
+          got=$(ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 ${{ inputs.film }}-full-16x9.mp4)
+          echo "Frames: $got of ${{ needs.plan.outputs.total }}" >> "$GITHUB_STEP_SUMMARY"
+          test "$got" -eq "${{ needs.plan.outputs.total }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.film }}-film
+          path: ${{ inputs.film }}-full-16x9.mp4
+          retention-days: 14

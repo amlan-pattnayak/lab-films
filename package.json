@@ -1,0 +1,7 @@
+{
+  "name": "lab-films",
+  "private": true,
+  "type": "module",
+  "description": "Renders the Lab pieces' full-length films on GitHub Actions, off the laptop.",
+  "dependencies": { "playwright": "1.63.0" }
+}

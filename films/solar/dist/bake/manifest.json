@@ -1,0 +1,1349 @@
+{
+  "version": 1,
+  "note": "A physically inspired simulation. \"physical\" lists what is computed; \"stylized\" lists every non-physical element.",
+  "units": {
+    "length": "AU",
+    "time": "yr",
+    "mass": "Msun",
+    "G": "4*pi^2"
+  },
+  "northPole": "+z; all orbits counterclockwise seen from +z",
+  "budgetBytes": 3145728,
+  "renderStylized": [
+    "Orbital motion is shown slowed; relative speeds (P^2 = a^3) are exact",
+    "Each simulated particle is drawn as a small cluster of strokes",
+    "Disk thickness of settled material in the collapse chapter follows the disk bake flaring law, exaggerated 2.5x when seen edge-on",
+    "Hook: planets fade into the disk during the rewind",
+    "Frost-line chapter: the outer disk is dimmed with radius (exposure), so the frost line and labels read",
+    "Jupiter and gas chapters: each tracer is drawn several times on its own orbit at other phases (orbits stay exact)",
+    "Close-up bodies are painted: the young Earth's dark crust and glowing cracks, the cooling magma ocean after the impact, Theia's craters, the young Moon's glow, and the planetesimals' rock-and-ice surfaces are all stylized (sizes and positions come from the bakes)",
+    "Planets are identified by color (each planet's real hue); in the collisions chapter each survivor takes the color of the planet whose orbit it ended nearest",
+    "Fig. 1 is a chondrite meteorite painted after typical specimens (textures and proportions typical; not one real stone)",
+    "Fig. 3 draws the planetesimal larger than its capture radius so it can be seen",
+    "The cloud chapter's supernova, its shock fronts, and their timing are stylized (the trigger itself is contested, S02)"
+  ],
+  "chapters": {
+    "collapse": {
+      "file": "collapse.v1.gzbin",
+      "scenes": [
+        "hook",
+        "cloud",
+        "collapse"
+      ],
+      "format": "adaptive-keys-v1",
+      "seed": 45670001,
+      "counts": {
+        "particles": 8000,
+        "keys": 207721,
+        "settledKeys": 36639,
+        "settled": 4641,
+        "accreted": 3359,
+        "active": 0
+      },
+      "time": {
+        "start": 0,
+        "end": 197989.89873223333,
+        "freeFallOuter": 176776.69529663687,
+        "sync": 200
+      },
+      "quantClamps": 0,
+      "params": {
+        "M0": 1,
+        "R0": 10000,
+        "rMin": 100,
+        "mSeed": 0.01,
+        "particleMass": 0.00012375,
+        "omega0": 7.695298980971184e-7,
+        "diskRadiusTarget": 150,
+        "rSink": 1.5,
+        "settleRelaxOrbits": 1,
+        "rotJitter": 0.25,
+        "turb": 0.05,
+        "temperature": {
+          "cloud": 10,
+          "T1": 280,
+          "law": "T = max(Tcloud, T1 * r^-1/2, Tshock)"
+        }
+      },
+      "quant": {
+        "logR": [
+          -0.6931471805599453,
+          10.308952660644293
+        ],
+        "logV": [
+          -9.210340371976182,
+          5.703782474656201
+        ],
+        "logT": [
+          1.6094379124341003,
+          8.006367567650246
+        ],
+        "dir": "octahedral-i16",
+        "vdir": "octahedral-i8",
+        "phi": "u16 over [0, 2pi)",
+        "time": "f32 years",
+        "settledR": "u16 log R over logR"
+      },
+      "fates": {
+        "0": "infalling at end",
+        "1": "settled into the disk",
+        "2": "accreted by the proto-Sun"
+      },
+      "comp": {
+        "0": "cold gas",
+        "1": "dust lane"
+      },
+      "physical": [
+        "Monopole gravity of the enclosed mass (point mass plus shells), G = 4 pi^2",
+        "Kick-drift-kick leapfrog, adaptive substeps inside fixed 200-year sync steps",
+        "Per-particle angular momentum L_z conserved exactly; the disk forms by itself",
+        "Inside-out collapse from a rho ~ r^-2 cloud; free-fall time of the outer shell ~ 176777 yr",
+        "Mass reaching the sink radius joins the proto-Sun; settled orbits follow its growing mass"
+      ],
+      "stylized": [
+        "Filament structure of the initial cloud (two-noise-field intersection)",
+        "Dust-lane placement: an art-directed irregular sheet passing near the core",
+        "Coherent turbulence in the initial velocities",
+        "Relaxation of radial and vertical velocity toward the local mean flow (stand-in for gas pressure and midplane shocks)",
+        "Accretion-shock heating used for color",
+        "Initial rotation chosen so the disk forms at ~150 AU (within observed core rotation rates, not fitted to the Sun)",
+        "Particles are tracers: disk self-gravity beyond the monopole and viscous inflow are not modeled"
+      ],
+      "bytesRaw": 3644756,
+      "bytesCompressed": 2801921,
+      "sha256": "55c8390420e62eec3ee97dc960f1327487ee5f8106ae5918f975c997c3e61de9",
+      "layout": [
+        {
+          "name": "fate",
+          "type": "u8",
+          "offset": 0,
+          "length": 8000
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 8000,
+          "length": 8000
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 16000,
+          "length": 8000
+        },
+        {
+          "name": "tangent",
+          "type": "i16",
+          "offset": 24000,
+          "length": 16000
+        },
+        {
+          "name": "Lz",
+          "type": "f32",
+          "offset": 56000,
+          "length": 8000
+        },
+        {
+          "name": "zSettle",
+          "type": "f32",
+          "offset": 88000,
+          "length": 8000
+        },
+        {
+          "name": "tFate",
+          "type": "f32",
+          "offset": 120000,
+          "length": 8000
+        },
+        {
+          "name": "keyStart",
+          "type": "u32",
+          "offset": 152000,
+          "length": 8001
+        },
+        {
+          "name": "kT",
+          "type": "f32",
+          "offset": 184004,
+          "length": 207721
+        },
+        {
+          "name": "kLogR",
+          "type": "u16",
+          "offset": 1014888,
+          "length": 207721
+        },
+        {
+          "name": "kDir",
+          "type": "i16",
+          "offset": 1430332,
+          "length": 415442
+        },
+        {
+          "name": "kLogV",
+          "type": "u16",
+          "offset": 2261216,
+          "length": 207721
+        },
+        {
+          "name": "kVDir",
+          "type": "i8",
+          "offset": 2676660,
+          "length": 415442
+        },
+        {
+          "name": "kTemp",
+          "type": "u8",
+          "offset": 3092104,
+          "length": 207721
+        },
+        {
+          "name": "sKeyStart",
+          "type": "u32",
+          "offset": 3299828,
+          "length": 8001
+        },
+        {
+          "name": "sT",
+          "type": "f32",
+          "offset": 3331832,
+          "length": 36639
+        },
+        {
+          "name": "sR",
+          "type": "u16",
+          "offset": 3478388,
+          "length": 36639
+        },
+        {
+          "name": "sPhi",
+          "type": "u16",
+          "offset": 3551668,
+          "length": 36639
+        },
+        {
+          "name": "sinkTable",
+          "type": "f32",
+          "offset": 3624948,
+          "length": 1982
+        },
+        {
+          "name": "scaleTable",
+          "type": "f32",
+          "offset": 3632876,
+          "length": 2970
+        }
+      ]
+    },
+    "disk": {
+      "file": "disk.v1.gzbin",
+      "scenes": [
+        "hook",
+        "collapse",
+        "time-zero",
+        "frost-line"
+      ],
+      "format": "orbital-elements-v1",
+      "seed": 45670002,
+      "counts": {
+        "particles": 60000,
+        "jetParticles": 6000
+      },
+      "quantClamps": 0,
+      "params": {
+        "centralMass": 1,
+        "rIn": 0.08,
+        "rOut": 120,
+        "rTaper": 45,
+        "sigmaSlope": -1,
+        "h0": 0.033,
+        "flare": 0.25,
+        "solidSettling": 0.3,
+        "T1": 280,
+        "Tfrost": 150,
+        "rFrost": 3.4844444444444447,
+        "driftMax": 0.0003,
+        "jets": {
+          "N": 6000,
+          "knots": 7,
+          "halfAngleDeg": 2.5,
+          "precessionDeg": 1.5,
+          "length": 2400,
+          "lateral": 0.028
+        },
+        "chondrules": {
+          "N": 160,
+          "aLo": 0.3,
+          "duration": 0.07
+        }
+      },
+      "quant": {
+        "logA": [
+          -2.995732273553991,
+          5.298317366548036
+        ],
+        "e": [
+          0,
+          0.2
+        ],
+        "i": [
+          0,
+          0.4
+        ],
+        "angles": [
+          0,
+          6.283185307179586
+        ],
+        "drift": [
+          0,
+          0.0003
+        ],
+        "logT": [
+          1.6094379124341003,
+          8.006367567650246
+        ],
+        "jSpeed": [
+          0.9,
+          1.1
+        ],
+        "jRadius": [
+          0,
+          1
+        ]
+      },
+      "comp": {
+        "0": "gas",
+        "1": "rock (inside the frost line)",
+        "2": "ice (beyond the frost line)"
+      },
+      "physical": [
+        "Keplerian orbits around 1 Msun evaluated exactly (Kepler equation solved per particle): P^2 = a^3, inner faster",
+        "All orbits counterclockwise seen from the north (+z)",
+        "Temperature T = T1 * r^-1/2; solids beyond the frost line (T < Tfrost) are ice"
+      ],
+      "stylized": [
+        "Surface-density profile Sigma ~ r^-1 with an exponential taper",
+        "Disk flaring and scale heights; solids settled thinner than gas",
+        "Random epicycles (small eccentricities) as a proxy for turbulence",
+        "Inward drift rate of solids",
+        "Frost line held fixed in this chapter (science: it moved over time, direction not shown)",
+        "Jets: knot cadence, opening angle, precession, length, speed",
+        "Chondrule flash events: seeded times and places inside the frost line; no heating mechanism implied (S06: contested)"
+      ],
+      "bytesRaw": 1122960,
+      "bytesCompressed": 976608,
+      "sha256": "51d4e00b9986fb2bff988e874a2625156582be5833efc767120507b6b45cb2de",
+      "layout": [
+        {
+          "name": "logA",
+          "type": "u16",
+          "offset": 0,
+          "length": 60000
+        },
+        {
+          "name": "ecc",
+          "type": "u16",
+          "offset": 120000,
+          "length": 60000
+        },
+        {
+          "name": "inc",
+          "type": "u16",
+          "offset": 240000,
+          "length": 60000
+        },
+        {
+          "name": "node",
+          "type": "u16",
+          "offset": 360000,
+          "length": 60000
+        },
+        {
+          "name": "peri",
+          "type": "u16",
+          "offset": 480000,
+          "length": 60000
+        },
+        {
+          "name": "M0",
+          "type": "u16",
+          "offset": 600000,
+          "length": 60000
+        },
+        {
+          "name": "drift",
+          "type": "u16",
+          "offset": 720000,
+          "length": 60000
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 840000,
+          "length": 60000
+        },
+        {
+          "name": "temp",
+          "type": "u8",
+          "offset": 900000,
+          "length": 60000
+        },
+        {
+          "name": "weight",
+          "type": "u8",
+          "offset": 960000,
+          "length": 60000
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 1020000,
+          "length": 60000
+        },
+        {
+          "name": "jSide",
+          "type": "i8",
+          "offset": 1080000,
+          "length": 6000
+        },
+        {
+          "name": "jPhase",
+          "type": "u16",
+          "offset": 1086000,
+          "length": 6000
+        },
+        {
+          "name": "jSpeed",
+          "type": "u8",
+          "offset": 1098000,
+          "length": 6000
+        },
+        {
+          "name": "jAngle",
+          "type": "u16",
+          "offset": 1104000,
+          "length": 6000
+        },
+        {
+          "name": "jRadius",
+          "type": "u8",
+          "offset": 1116000,
+          "length": 6000
+        },
+        {
+          "name": "cT",
+          "type": "u16",
+          "offset": 1122000,
+          "length": 160
+        },
+        {
+          "name": "cA",
+          "type": "u16",
+          "offset": 1122320,
+          "length": 160
+        },
+        {
+          "name": "cM0",
+          "type": "u16",
+          "offset": 1122640,
+          "length": 160
+        }
+      ]
+    },
+    "today": {
+      "file": "today.v1.gzbin",
+      "scenes": [
+        "hook",
+        "leftovers",
+        "coda"
+      ],
+      "format": "orbital-elements-v1",
+      "seed": 45670003,
+      "counts": {
+        "particles": 9900,
+        "asteroids": 900,
+        "kuiper": 9000
+      },
+      "quantClamps": 0,
+      "params": {
+        "centralMass": 1,
+        "T1": 280,
+        "Tfrost": 150,
+        "rFrost": 3.4844444444444447,
+        "asteroids": {
+          "N": 900,
+          "aLo": 2.1,
+          "aHi": 3.3,
+          "eSigma": 0.09,
+          "iSigma": 0.11
+        },
+        "kuiper": {
+          "N": 9000,
+          "aLo": 39,
+          "aHi": 48,
+          "eSigma": 0.05,
+          "iSigma": 0.09
+        }
+      },
+      "quant": {
+        "logA": [
+          -2.995732273553991,
+          5.298317366548036
+        ],
+        "e": [
+          0,
+          0.2
+        ],
+        "i": [
+          0,
+          0.4
+        ],
+        "angles": [
+          0,
+          6.283185307179586
+        ],
+        "drift": [
+          0,
+          1
+        ],
+        "logT": [
+          1.6094379124341003,
+          8.006367567650246
+        ]
+      },
+      "comp": {
+        "1": "rock (asteroid belt)",
+        "2": "ice (Kuiper belt)"
+      },
+      "belt": {
+        "0": "asteroid belt",
+        "1": "Kuiper belt"
+      },
+      "physical": [
+        "Keplerian orbits around 1 Msun evaluated exactly: P^2 = a^3, inner faster, counterclockwise from the north"
+      ],
+      "stylized": [
+        "Tracer density: the real belts are far emptier than drawn",
+        "Belt radial extents and eccentricity/inclination spreads (never labeled with numbers)",
+        "Resonance gaps and scattered/detached populations not modeled"
+      ],
+      "bytesRaw": 188100,
+      "bytesCompressed": 139375,
+      "sha256": "2de00016fef869f6a3c3d01be9bc98e700879402d0c8f64b16fc065502f12509",
+      "layout": [
+        {
+          "name": "logA",
+          "type": "u16",
+          "offset": 0,
+          "length": 9900
+        },
+        {
+          "name": "ecc",
+          "type": "u16",
+          "offset": 19800,
+          "length": 9900
+        },
+        {
+          "name": "inc",
+          "type": "u16",
+          "offset": 39600,
+          "length": 9900
+        },
+        {
+          "name": "node",
+          "type": "u16",
+          "offset": 59400,
+          "length": 9900
+        },
+        {
+          "name": "peri",
+          "type": "u16",
+          "offset": 79200,
+          "length": 9900
+        },
+        {
+          "name": "M0",
+          "type": "u16",
+          "offset": 99000,
+          "length": 9900
+        },
+        {
+          "name": "drift",
+          "type": "u16",
+          "offset": 118800,
+          "length": 9900
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 138600,
+          "length": 9900
+        },
+        {
+          "name": "temp",
+          "type": "u8",
+          "offset": 148500,
+          "length": 9900
+        },
+        {
+          "name": "weight",
+          "type": "u8",
+          "offset": 158400,
+          "length": 9900
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 168300,
+          "length": 9900
+        },
+        {
+          "name": "belt",
+          "type": "u8",
+          "offset": 178200,
+          "length": 9900
+        }
+      ]
+    },
+    "pebbles": {
+      "file": "pebbles.v1.gzbin",
+      "scenes": [
+        "dust-to-worlds"
+      ],
+      "format": "pebbles-v1",
+      "seed": 45670004,
+      "counts": {
+        "particles": 5000,
+        "filaments": 4,
+        "bodies": 8
+      },
+      "quantClamps": 0,
+      "params": {
+        "rPatch": 4.355555555555556,
+        "omega": 0.6912171929231034,
+        "halfX": 0.12,
+        "halfY": 0.3,
+        "halfZ": 0.012,
+        "filamentWidth": 0.006,
+        "filamentsX": [
+          -0.06836778782755137,
+          -0.029886288321018223,
+          0.029266338957846166,
+          0.06273373388350009
+        ],
+        "bodies": [
+          {
+            "filament": 0,
+            "x": -0.06836778782755137,
+            "y": -0.08619725617580115,
+            "r": 0.011755481849983334
+          },
+          {
+            "filament": 0,
+            "x": -0.06836778782755137,
+            "y": 0.1596507781371474,
+            "r": 0.009270439496822654
+          },
+          {
+            "filament": 1,
+            "x": -0.029886288321018223,
+            "y": -0.11247259732335804,
+            "r": 0.00886462799180299
+          },
+          {
+            "filament": 1,
+            "x": -0.029886288321018223,
+            "y": 0.08731156591326,
+            "r": 0.014878660841099917
+          },
+          {
+            "filament": 2,
+            "x": 0.029266338957846166,
+            "y": -0.10056221986189484,
+            "r": 0.010033842254430056
+          },
+          {
+            "filament": 2,
+            "x": 0.029266338957846166,
+            "y": 0.11578833807259797,
+            "r": 0.012697118234820665
+          },
+          {
+            "filament": 3,
+            "x": 0.06273373388350009,
+            "y": -0.12811493723653256,
+            "r": 0.009135077500529587
+          },
+          {
+            "filament": 3,
+            "x": 0.06273373388350009,
+            "y": 0.11052303498610855,
+            "r": 0.01447800394333899
+          }
+        ],
+        "acc": {
+          "St": 0.1,
+          "vHw": 0.3,
+          "yStart": 6,
+          "rBody": 0.05,
+          "dt": 0.002,
+          "tMax": 40,
+          "every": 50,
+          "n": 40,
+          "bMax": 2.4,
+          "box": 6.6000000000000005,
+          "captured": 12,
+          "frame": "Hill units of one body: x radial outward, y along the orbit; length r_H, time 1/Omega"
+        }
+      },
+      "frame": "co-rotating patch: x radial outward, y along the orbit, z north; periodic in y",
+      "physical": [
+        "Local Keplerian shear, exact: v_y = -1.5 Omega x (inner material drifts ahead)",
+        "Omega = sqrt(G M / r^3) at the patch radius, just beyond the frost line",
+        "Pebble accretion diagram: trajectories integrated (RK4) in the body's Hill frame with tidal and Coriolis forces, the body's gravity, and gas drag toward a sub-Keplerian headwind (Stokes number 0.1); which pebbles are captured is computed"
+      ],
+      "stylized": [
+        "Growth stages and the stall at about the meter scale (S08 wording only; no sizes shown)",
+        "Concentration into filaments, informed by the streaming instability's look (leading hypothesis, S08)",
+        "Collapse of filament clumps into bodies",
+        "Pebble-accretion beat in the patch (leading hypothesis, S08); the magnified diagram is computed, but its body is drawn larger than its capture radius so it can be seen",
+        "Pebble counts and the patch size (never labeled with numbers)"
+      ],
+      "bytesRaw": 81524,
+      "bytesCompressed": 72006,
+      "sha256": "7ea02e30b0271b727b5ed14c0a8eb51fd9e19a438776dd672dfb80541bc0aabc",
+      "layout": [
+        {
+          "name": "x0",
+          "type": "u16",
+          "offset": 0,
+          "length": 5000
+        },
+        {
+          "name": "y0",
+          "type": "u16",
+          "offset": 10000,
+          "length": 5000
+        },
+        {
+          "name": "z0",
+          "type": "u16",
+          "offset": 20000,
+          "length": 5000
+        },
+        {
+          "name": "fil",
+          "type": "u8",
+          "offset": 30000,
+          "length": 5000
+        },
+        {
+          "name": "body",
+          "type": "u8",
+          "offset": 35000,
+          "length": 5000
+        },
+        {
+          "name": "off",
+          "type": "i16",
+          "offset": 40000,
+          "length": 10000
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 60000,
+          "length": 5000
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 65000,
+          "length": 5000
+        },
+        {
+          "name": "accB",
+          "type": "f32",
+          "offset": 70000,
+          "length": 40
+        },
+        {
+          "name": "accFate",
+          "type": "u8",
+          "offset": 70160,
+          "length": 40
+        },
+        {
+          "name": "accLen",
+          "type": "u16",
+          "offset": 70200,
+          "length": 40
+        },
+        {
+          "name": "accXY",
+          "type": "i16",
+          "offset": 70280,
+          "length": 5622
+        }
+      ]
+    },
+    "jupiter": {
+      "file": "jupiter.v1.gzbin",
+      "scenes": [
+        "jupiter",
+        "gas-clears"
+      ],
+      "format": "element-keys-v1",
+      "seed": 45670005,
+      "counts": {
+        "particles": 5000,
+        "keys": 9,
+        "cores": 4,
+        "accreted": 957
+      },
+      "quantClamps": 0,
+      "time": {
+        "end": 3000,
+        "dt": 0.04
+      },
+      "params": {
+        "rIn": 2.4,
+        "rOut": 34,
+        "rFrost": 3.4844444444444447,
+        "T1": 280,
+        "Tfrost": 150,
+        "cores": [
+          {
+            "name": "Jupiter",
+            "a": 5.2,
+            "m": 0.000955,
+            "grow": [
+              0.02,
+              0.55
+            ]
+          },
+          {
+            "name": null,
+            "a": 10.8,
+            "m": 0.00028649999999999997,
+            "grow": [
+              0.2,
+              0.75
+            ]
+          },
+          {
+            "name": null,
+            "a": 17.5,
+            "m": 0.00004775,
+            "grow": [
+              0.35,
+              0.9
+            ]
+          },
+          {
+            "name": null,
+            "a": 25.5,
+            "m": 0.00004775,
+            "grow": [
+              0.45,
+              0.95
+            ]
+          }
+        ],
+        "mCore0": 0.00003
+      },
+      "quant": {
+        "logA": [
+          -2.995732273553991,
+          5.298317366548036
+        ],
+        "e": [
+          0,
+          0.6
+        ],
+        "i": [
+          0,
+          0.4
+        ],
+        "angles": [
+          0,
+          6.283185307179586
+        ],
+        "logT": [
+          1.6094379124341003,
+          8.006367567650246
+        ]
+      },
+      "comp": {
+        "0": "gas",
+        "1": "rock",
+        "2": "ice"
+      },
+      "physical": [
+        "Giant cores integrated as an N-body system around the Sun (kick-drift-kick, G = 4 pi^2)",
+        "Tracers feel the Sun and the cores; gaps clear by gravity",
+        "Accretion inside the Hill radius r_H = a (m / 3 Msun)^(1/3)"
+      ],
+      "stylized": [
+        "Core growth schedules and time compression (the run spans a few thousand years)",
+        "The unlabeled giants' formation radii (seeded, not today's orbits)",
+        "Gas-gap depth in rendering (gas tracers near a core fade)",
+        "Sun held fixed at the origin; small-embryo gravity on tracers neglected",
+        "Orbital phases shown on a slowed display clock (elements are interpolated between keys)"
+      ],
+      "bytesRaw": 580612,
+      "bytesCompressed": 479238,
+      "sha256": "825674b09a408eff457b12cfe3ed9d138dc89998fdd77477bca95271d3f7b8a8",
+      "layout": [
+        {
+          "name": "kA",
+          "type": "u16",
+          "offset": 0,
+          "length": 45000
+        },
+        {
+          "name": "kE",
+          "type": "u16",
+          "offset": 90000,
+          "length": 45000
+        },
+        {
+          "name": "kI",
+          "type": "u16",
+          "offset": 180000,
+          "length": 45000
+        },
+        {
+          "name": "kNode",
+          "type": "u16",
+          "offset": 270000,
+          "length": 45000
+        },
+        {
+          "name": "kPeri",
+          "type": "u16",
+          "offset": 360000,
+          "length": 45000
+        },
+        {
+          "name": "kM",
+          "type": "u16",
+          "offset": 450000,
+          "length": 45000
+        },
+        {
+          "name": "fate",
+          "type": "f32",
+          "offset": 540000,
+          "length": 5000
+        },
+        {
+          "name": "fateCore",
+          "type": "u8",
+          "offset": 560000,
+          "length": 5000
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 565000,
+          "length": 5000
+        },
+        {
+          "name": "weight",
+          "type": "u8",
+          "offset": 570000,
+          "length": 5000
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 575000,
+          "length": 5000
+        },
+        {
+          "name": "keyT",
+          "type": "f32",
+          "offset": 580000,
+          "length": 9
+        },
+        {
+          "name": "cores",
+          "type": "f32",
+          "offset": 580036,
+          "length": 144
+        }
+      ]
+    },
+    "collisions": {
+      "file": "collisions.v1.gzbin",
+      "scenes": [
+        "collisions"
+      ],
+      "format": "nbody-keys-v1",
+      "seed": 45670006,
+      "counts": {
+        "bodies": 13,
+        "embryos": 12,
+        "keys": 150,
+        "events": 7,
+        "survivors": 5
+      },
+      "time": {
+        "end": 20000,
+        "dt": 0.004
+      },
+      "params": {
+        "jupiterIndex": 12,
+        "embryoMass": 0.000003,
+        "radius": 0.04,
+        "survivors": [
+          1,
+          3,
+          4,
+          6,
+          7
+        ]
+      },
+      "physical": [
+        "Embryos and Jupiter integrated as an N-body system (kick-drift-kick, G = 4 pi^2)",
+        "Mergers conserve mass and momentum exactly"
+      ],
+      "stylized": [
+        "Embryo masses boosted and collision radii inflated (time compression)",
+        "The survivors are this run's own outcome (5 bodies), not today's planets; today's orbits are drawn only as reference hairlines",
+        "Collision flashes drawn at the survivor's display position (orbital phases on a slowed display clock)"
+      ],
+      "bytesRaw": 57348,
+      "bytesCompressed": 27367,
+      "sha256": "42e92e78ab48b268199ae693767631100819b06d5b2353b54655f5e405548ebf",
+      "layout": [
+        {
+          "name": "keys",
+          "type": "f32",
+          "offset": 0,
+          "length": 13650
+        },
+        {
+          "name": "alive",
+          "type": "u8",
+          "offset": 54600,
+          "length": 1950
+        },
+        {
+          "name": "events",
+          "type": "f32",
+          "offset": 56552,
+          "length": 49
+        },
+        {
+          "name": "keyT",
+          "type": "f32",
+          "offset": 56748,
+          "length": 150
+        }
+      ]
+    },
+    "moon": {
+      "file": "moon.v1.gzbin",
+      "scenes": [
+        "moon"
+      ],
+      "format": "impact-v2",
+      "seed": 45670017,
+      "counts": {
+        "particles": 2342,
+        "earth": 2115,
+        "theia": 227,
+        "keys1": 177,
+        "disk": 400,
+        "keys2": 201
+      },
+      "quantClamps": 0,
+      "params": {
+        "R_EARTH": 0.0000426,
+        "M_EARTH": 0.000003,
+        "T_UNIT_S": 806,
+        "a": 0.072,
+        "dt": 0.0036,
+        "key1": 0.25,
+        "box1": 16,
+        "t1": 44,
+        "mTheia": 0.11,
+        "rTheia": 0.4791419857062784,
+        "angleDeg": 45,
+        "vRatio": 1,
+        "vImpact": 1.2251000422498377,
+        "theiaStart": [
+          2.8055877133935363,
+          -1.9212021085831936,
+          0
+        ],
+        "earthCM1": [
+          0.018416861267062944,
+          -0.06453650071176815,
+          -0.0010514581528218371
+        ],
+        "key2": 15,
+        "t2": 3000,
+        "logA": [
+          -0.2231435513142097,
+          5.991464547107982
+        ],
+        "mMax": 0.019336186875787587,
+        "muEarth": 1.0896946501286269,
+        "roche": 2.9,
+        "rMoonUnit": 0.273,
+        "moonIndex": 280
+      },
+      "outcome": {
+        "earthMass": 1.08969,
+        "theiaMergedFraction": 0.8326,
+        "diskMassLunar": 1.572,
+        "diskTheiaFraction": 0.902,
+        "escapedMass": 0.00097,
+        "moonMassLunar": 0.6,
+        "moonA": 2.535,
+        "moonE": 0.206,
+        "absorbedLunar": 0.428,
+        "merges": 348,
+        "stage1MaxMomentumDrift": 1.4338472986497277e-12,
+        "stage1MaxAngularMomentumDrift": 3.0601459914289617e-15,
+        "stage2MassCheck": 7.72e-15
+      },
+      "physical": [
+        "Stage 1 (impact): Newtonian gravity between all particle pairs; contact forces equal and opposite; kick-drift-kick leapfrog; momentum and angular momentum conserved (tested)",
+        "Earth's deformation and spin-up, Theia's smeared arm and returning clump, and the orbiting disk emerge from the computation",
+        "Stage 2 (accretion): mutual gravity of the debris around Earth; merging on contact outside the Roche limit (2.9 Earth radii), inelastic bounces inside it; absorption at Earth's surface; mass and momentum conserved in mergers",
+        "Between keys, debris and the Moon move on exact Kepler orbits about Earth"
+      ],
+      "stylized": [
+        "A few thousand particles stand in for the planets; contact forces stand in for pressure; no vaporization or material strength",
+        "Impact geometry chosen as the canonical case (about 45 degrees, near escape speed; Theia 0.11 Earth masses); S14 says only that a Mars-sized body struck, and its size and timing are debated",
+        "Stage 2 splits each orbiting particle into finer ones and holds Earth fixed at the centre",
+        "Heat (from contact dissipation) drives colour only",
+        "Display time is compressed (hours of impact, weeks of accretion)"
+      ],
+      "bytesRaw": 4608164,
+      "bytesCompressed": 1025996,
+      "sha256": "68ed3c7f82937671c883615ceeeeb2607bc80f44245f9c1d6f364dc6b57a6dd8",
+      "layout": [
+        {
+          "name": "core",
+          "type": "u8",
+          "offset": 0,
+          "length": 2342
+        },
+        {
+          "name": "origin",
+          "type": "u8",
+          "offset": 2344,
+          "length": 2342
+        },
+        {
+          "name": "pos1",
+          "type": "i16",
+          "offset": 4688,
+          "length": 1243602
+        },
+        {
+          "name": "heat1",
+          "type": "u8",
+          "offset": 2491892,
+          "length": 414534
+        },
+        {
+          "name": "body1",
+          "type": "u8",
+          "offset": 2906428,
+          "length": 414534
+        },
+        {
+          "name": "parent2",
+          "type": "u16",
+          "offset": 3320964,
+          "length": 400
+        },
+        {
+          "name": "el2",
+          "type": "u16",
+          "offset": 3321764,
+          "length": 482400
+        },
+        {
+          "name": "mass2",
+          "type": "u16",
+          "offset": 4286564,
+          "length": 80400
+        },
+        {
+          "name": "alive2",
+          "type": "u8",
+          "offset": 4447364,
+          "length": 80400
+        },
+        {
+          "name": "heat2",
+          "type": "u8",
+          "offset": 4527764,
+          "length": 80400
+        }
+      ]
+    },
+    "giants": {
+      "file": "giants.v1.gzbin",
+      "scenes": [
+        "giants"
+      ],
+      "format": "element-keys-v1",
+      "seed": 45670008,
+      "counts": {
+        "particles": 3000,
+        "keys": 90,
+        "planets": 4,
+        "ejected": 0
+      },
+      "quantClamps": 0,
+      "time": {
+        "end": 12000,
+        "dt": 0.05
+      },
+      "params": {
+        "rFrost": 3.4844444444444447,
+        "T1": 280,
+        "planets": [
+          {
+            "m": 0.000955,
+            "aStart": 5.5,
+            "aFinal": 5.2
+          },
+          {
+            "m": 0.000286,
+            "aStart": 8.2,
+            "aFinal": 9.54
+          },
+          {
+            "m": 0.0001311,
+            "aStart": 11.5,
+            "aFinal": 19.2
+          },
+          {
+            "m": 0.0001545,
+            "aStart": 15,
+            "aFinal": 30.1
+          }
+        ],
+        "migrate": [
+          0.08,
+          0.7
+        ],
+        "pinnedOrbits": 0
+      },
+      "quant": {
+        "logA": [
+          -2.995732273553991,
+          5.298317366548036
+        ],
+        "e": [
+          0,
+          0.9
+        ],
+        "i": [
+          0,
+          0.6
+        ],
+        "angles": [
+          0,
+          6.283185307179586
+        ]
+      },
+      "physical": [
+        "Icy planetesimals integrated as test particles under the Sun and the four giants (kick-drift-kick)",
+        "Their scattering by the giants is computed"
+      ],
+      "stylized": [
+        "The giants' migration paths and compact starting orbits (never labeled)",
+        "Time compression (the run spans about 12,000 years); Uranus and Neptune masses tripled to speed scattering",
+        "Softened planet gravity at close encounters",
+        "Scattered orbits beyond 200 AU or unbound are drawn pinned at the edge until they leave"
+      ],
+      "bytesRaw": 3264240,
+      "bytesCompressed": 2523831,
+      "sha256": "9ee69129e58b5a29b1200b64de943d290812663e116abed6c14204cb7eaa80fc",
+      "layout": [
+        {
+          "name": "kA",
+          "type": "u16",
+          "offset": 0,
+          "length": 270000
+        },
+        {
+          "name": "kE",
+          "type": "u16",
+          "offset": 540000,
+          "length": 270000
+        },
+        {
+          "name": "kI",
+          "type": "u16",
+          "offset": 1080000,
+          "length": 270000
+        },
+        {
+          "name": "kNode",
+          "type": "u16",
+          "offset": 1620000,
+          "length": 270000
+        },
+        {
+          "name": "kPeri",
+          "type": "u16",
+          "offset": 2160000,
+          "length": 270000
+        },
+        {
+          "name": "kM",
+          "type": "u16",
+          "offset": 2700000,
+          "length": 270000
+        },
+        {
+          "name": "fate",
+          "type": "f32",
+          "offset": 3240000,
+          "length": 3000
+        },
+        {
+          "name": "comp",
+          "type": "u8",
+          "offset": 3252000,
+          "length": 3000
+        },
+        {
+          "name": "weight",
+          "type": "u8",
+          "offset": 3255000,
+          "length": 3000
+        },
+        {
+          "name": "size",
+          "type": "u8",
+          "offset": 3258000,
+          "length": 3000
+        },
+        {
+          "name": "keyT",
+          "type": "f32",
+          "offset": 3261000,
+          "length": 90
+        },
+        {
+          "name": "planets",
+          "type": "f32",
+          "offset": 3261360,
+          "length": 720
+        }
+      ]
+    }
+  }
+}

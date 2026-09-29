@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>How the Solar System Formed</title>
+    <meta name="description" content="From a collapsing cloud to the planets we have today: a physically inspired simulation, drawn as a nineteenth-century astronomical plate." />
+    <meta name="theme-color" content="#050607" />
+    <!-- Share card. og:image must be ABSOLUTE for most crawlers; the Astro host should
+         rewrite it to https://<site>/lab/solar-system/og.jpg at deploy (kept relative here
+         per the static-bundle rule). -->
+    <meta property="og:title" content="How the Solar System Formed" />
+    <meta property="og:description" content="From a collapsing cloud to the planets we have today: a physically inspired simulation, drawn as a nineteenth-century astronomical plate." />
+    <meta property="og:image" content="./og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="module" crossorigin src="./assets/index-BEw5jEVn.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Cb80akZh.css">
+  </head>
+  <body>
+    <div id="scroller">
+      <div id="stage" aria-label="How the Solar System formed, an illustrated simulation">
+        <canvas id="gl"></canvas>
+        <svg id="overlay" xmlns="http://www.w3.org/2000/svg" aria-hidden="false"></svg>
+      </div>
+    </div>
+    <noscript>This piece needs JavaScript and WebGL 2.</noscript>
+  </body>
+</html>
