@@ -24,7 +24,7 @@ on:
         default: 0
 
 concurrency:
-  group: render-${{ inputs.film }}
+  group: render-${{ inputs.film }}-${{ inputs.start }}   # (a range re-render doesn't wait behind the run it's rescuing)
   cancel-in-progress: false
 
 jobs:
