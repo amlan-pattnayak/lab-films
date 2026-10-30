@@ -8,7 +8,7 @@ on:
       film:
         description: Which piece
         type: choice
-        options: [solar, gupta, telecaster]
+        options: [solar, gupta, telecaster, telecaster-reel]
         default: solar
       chunks:
         description: Parallel chunks
@@ -42,7 +42,7 @@ jobs:
       - name: Count frames
         id: plan
         run: |
-          python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${{ inputs.film }}/dist >/dev/null 2>&1 &
+          f=${{ inputs.film }}; python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${f%-reel}/dist >/dev/null 2>&1 &
           sleep 1
           total=$(FILM=${{ inputs.film }} MODE=count node render.mjs | tail -1)
           start=${{ inputs.start }}
@@ -70,7 +70,7 @@ jobs:
       - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
       - name: Render frames ${{ matrix.start }}+${{ matrix.count }}
         run: |
-          python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${{ inputs.film }}/dist >/dev/null 2>&1 &
+          f=${{ inputs.film }}; python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${f%-reel}/dist >/dev/null 2>&1 &
           sleep 1
           FILM=${{ inputs.film }} START=${{ matrix.start }} COUNT=${{ matrix.count }} \
             OUT=chunk-$(printf %03d ${{ matrix.i }}).mp4 node render.mjs
@@ -91,12 +91,13 @@ jobs:
       - name: Join chunks and check the frame count
         run: |
           ls chunk-*.mp4 | sort | sed "s/.*/file '&'/" > list.txt
-          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy -movflags +faststart ${{ inputs.film }}-full-16x9.mp4
-          got=$(ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 ${{ inputs.film }}-full-16x9.mp4)
+          shape=16x9; case "${{ inputs.film }}" in *-reel) shape=9x16;; esac   # (a reel is the phone layout, 1080x1920)
+          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy -movflags +faststart ${{ inputs.film }}-full-$shape.mp4
+          got=$(ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 ${{ inputs.film }}-full-$shape.mp4)
           echo "Frames: $got of ${{ needs.plan.outputs.total }}" >> "$GITHUB_STEP_SUMMARY"
           test "$got" -eq "${{ needs.plan.outputs.total }}"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.film }}-film
-          path: ${{ inputs.film }}-full-16x9.mp4
+          path: ${{ inputs.film }}-full-*.mp4
           retention-days: 14
