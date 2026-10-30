@@ -15,7 +15,11 @@ on:
         type: number
         default: 16
       limit:
-        description: Render only the first N frames (0 = the whole film). For test runs.
+        description: Render only N frames (0 = to the end). For test runs, and with start, a range.
+        type: number
+        default: 0
+      start:
+        description: First frame (0 = the start). With limit, re-renders one range, e.g. a slow chunk, spread wider.
         type: number
         default: 0
 
@@ -41,9 +45,11 @@ jobs:
           python3 -m http.server 8000 --bind 127.0.0.1 --directory films/${{ inputs.film }}/dist >/dev/null 2>&1 &
           sleep 1
           total=$(FILM=${{ inputs.film }} MODE=count node render.mjs | tail -1)
+          start=${{ inputs.start }}
           limit=${{ inputs.limit }}
+          total=$((total - start))
           if [ "$limit" -gt 0 ] && [ "$limit" -lt "$total" ]; then total=$limit; fi
-          matrix=$(python3 -c "import json,math; t=$total; c=min(${{ inputs.chunks }}, t); s=math.ceil(t/c); print(json.dumps({'include':[{'i':i,'start':i*s,'count':min(s,t-i*s)} for i in range(c) if i*s<t]}))")
+          matrix=$(python3 -c "import json,math; t=$total; o=$start; c=min(${{ inputs.chunks }}, t); s=math.ceil(t/c); print(json.dumps({'include':[{'i':i,'start':o+i*s,'count':min(s,t-i*s)} for i in range(c) if i*s<t]}))")
           echo "total=$total" >> "$GITHUB_OUTPUT"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
           echo "Frames: $total" >> "$GITHUB_STEP_SUMMARY"
