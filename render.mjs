@@ -71,8 +71,13 @@ const shot = () => page.screenshot({ type: 'png', timeout: 120000 });
 const t0 = Date.now();
 const raf2 = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 let onBridge = false;   // (a frame list: the page is on the highlights film, or on the bridge chapter)
+let last = null, lastBuf = null;   // (a frame list may repeat an entry: the same frame, reused)
 for (let k = 0; k < mine.length; k++) {
   const f = mine[k];
+  if (cfg.list && lastBuf && JSON.stringify(f) === last) {
+    if (!ff.stdin.write(lastBuf)) await new Promise((r) => ff.stdin.once('drain', r));
+    continue;
+  }
   if (cfg.list) {
     if ((f.bridge != null) !== onBridge) {
       onBridge = f.bridge != null;
@@ -89,6 +94,7 @@ for (let k = 0; k < mine.length; k++) {
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   }
   const buf = await shot().catch(() => shot());
+  last = JSON.stringify(f); lastBuf = buf;
   if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once('drain', r));
   if ((k + 1) % 50 === 0) console.log(`${k + 1}/${mine.length}  ${((Date.now() - t0) / (k + 1) / 1000).toFixed(2)} s/frame`);
 }
