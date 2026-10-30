@@ -76,7 +76,7 @@ for (let k = 0; k < mine.length; k++) {
   if (cfg.list) {
     if ((f.bridge != null) !== onBridge) {
       onBridge = f.bridge != null;
-      await page.goto(URL_ + (onBridge ? cfg.bridge : cfg.query), { waitUntil: 'networkidle' });
+      await page.goto(URL_ + (onBridge ? cfg.bridge : cfg.query), { waitUntil: 'load', timeout: 300000 });   // (the ready checks below wait for the rest)
       if (onBridge) await page.waitForFunction(() => window.__telecaster && !window.__telecaster.busy(), null, { timeout: 300000 });
       else await page.waitForFunction(() => window.__demo?.ready === true, null, { timeout: 300000 });
     }
