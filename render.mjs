@@ -1,7 +1,7 @@
 // Frame-exact film recorder for the Lab pieces, run on GitHub Actions.
 // Each piece exposes window.__demo; this seeks it frame by frame and pipes PNG
 // screenshots into ffmpeg. Frames are identical to the local tools
-// (solar: tools/export-film.mjs, gupta: scripts/render-film.mjs), so chunks
+// (solar: tools/export-film.mjs, gupta: scripts/render-film.mjs; telecaster has none), so chunks
 // rendered on separate machines join with `ffmpeg -f concat -c copy`.
 //
 //   FILM=solar MODE=count node render.mjs                -> prints the frame count
@@ -17,6 +17,9 @@ const FILMS = {
   solar: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'], query: '?film=1&paused=1' },
   // CSS 3D, no GPU, as locally.
   gupta: { args: ['--no-sandbox', '--disable-gpu', '--hide-scrollbars'], query: '?qa=1' },
+  // WebGL in software, at the high tier (shadows, depth of field) it would drop to on its own; its highlights cut.
+  // Seeked like gupta: __demo.total and __demo.seekTime(t). Its own source: telecaster-story/src/film.js.
+  telecaster: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'], query: '?qa=1&film=highlights&tier=high' },
 };
 const cfg = FILMS[FILM];
 if (!cfg) throw new Error(`FILM must be one of ${Object.keys(FILMS).join(', ')}`);

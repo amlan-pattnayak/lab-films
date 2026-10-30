@@ -1,0 +1,1 @@
+{"part": "stand", "units": "in", "lean_deg": 12.0, "guitar_at_in": [0.0, 19.82103157043457, -4.151134014129639], "frame": "room: Y up, floor y = 0, Z toward the audience; guitar = translate(guitar_at) \u00b7 rotateX(-lean) \u00b7 model"}

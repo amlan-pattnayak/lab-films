@@ -8,7 +8,7 @@ on:
       film:
         description: Which piece
         type: choice
-        options: [solar, gupta]
+        options: [solar, gupta, telecaster]
         default: solar
       chunks:
         description: Parallel chunks
